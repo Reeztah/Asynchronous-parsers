@@ -33,3 +33,5 @@ if __name__ == '__main__':
         loop.run_until_complete(future)
         responses = future.result()
         print(f'Получено {ntimes} результатов запроса за {time.time() - start_time} секунд')
+
+#test
