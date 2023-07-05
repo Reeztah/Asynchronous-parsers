@@ -7,7 +7,6 @@ async def fun1(x):
     await asyncio.sleep(3)  # засыпаем на 3 секунды
     print('...fun1 очнулась и завершена')  # выводим сообщение
 
-
 async def fun2(x):
     print(f"x ** 0.5 = {x ** 0.5} быстрая часть функции fun2")  # находим квадрат 0.5 от x
     await asyncio.sleep(3)  # засыпаем на 3 секунды
