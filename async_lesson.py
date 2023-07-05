@@ -1,23 +1,35 @@
 import asyncio
 import time
+from aiohttp import ClientSession
 
 
-async def fun1(x):
-    print(f"x ** 2 = {x ** 2} быстрая часть функции fun1")  # находим квадрат от x
-    await asyncio.sleep(3)  # засыпаем на 3 секунды
-    print('...fun1 очнулась и завершена')  # выводим сообщение
+async def fetch_url_data(session, url):
+    try:
+        async with session.get(url, timeout=60) as response:
+            resp = await response.read()
+    except Exception as e:
+        print(e)
+    else:
+        return resp
+    return None
 
-async def fun2(x):
-    print(f"x ** 0.5 = {x ** 0.5} быстрая часть функции fun2")  # находим квадрат 0.5 от x
-    await asyncio.sleep(3)  # засыпаем на 3 секунды
-    print('...fun2 очнулась и завершена')  # выводим сообщение
+
+async def fetch_async(loop, r):
+    url = 'https://www.uefa.com/uefaeuro-2020/'
+    tasks = []
+    async with ClientSession() as session:
+        for i in range(r):
+            task = asyncio.ensure_future(fetch_url_data(session, url))
+            tasks.append(task)
+        responses = await asyncio.gather(*tasks)
+    return responses
 
 
-print(time.strftime('%X'))
-
-loop = asyncio.get_event_loop()
-task1 = loop.create_task(fun1(4))
-task2 = loop.create_task(fun2(4))
-loop.run_until_complete(asyncio.wait([task1, task2]))
-
-print(time.strftime('%X'))
+if __name__ == '__main__':
+    for ntimes in [1, 10, 50, 100, 500]:
+        start_time = time.time()
+        loop = asyncio.get_event_loop()
+        future = asyncio.ensure_future(fetch_async(loop, ntimes))
+        loop.run_until_complete(future)
+        responses = future.result()
+        print(f'Получено {ntimes} результатов запроса за {time.time() - start_time} секунд')
