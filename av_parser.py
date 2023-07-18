@@ -18,18 +18,15 @@ async def write_to_file(filename, data):
         print(f'Ошибка при записи в файл: {e}')
 
 
-async def fetch_url(session, url, params=None):
-    async with session.get(url, headers=headers, params=params) as response:
-        if response.status != 200:
-            raise ValueError(f"Ошибка при получении страницы: {response.status} {response.reason}")
-        return await response.text()
-
-
 async def get_html(url, page):
     try:
         async with aiohttp.ClientSession() as session:
-            params = {'page': page}
-            html = await fetch_url(session, url, params=params)
+          params = {'page': page}
+          async with session.get(url, headers=headers, params=params) as response:
+            if response.status != 200:
+              raise ValueError(f"Ошибка при получении страницы: {response.status} {response.reason}")
+            html = await response.text()
+            print(html)
             return html
     except (aiohttp.ClientError, ValueError) as e:
         print(f"Произошла ошибка при извлечении страницы: {e}")
